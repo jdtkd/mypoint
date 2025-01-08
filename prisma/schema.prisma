@@ -1,0 +1,33 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modèle pour l'utilisateur
+model User {
+  id        String      @id @default(uuid())
+  email     String      @unique
+  name      String?
+  pointages Pointage[]  // Relation avec les pointages
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+// Modèle pour le pointage
+model Pointage {
+  id            String    @id @default(uuid())
+  userId        String    // Clé étrangère pour l'utilisateur
+  user          User      @relation(fields: [userId], references: [id])
+  dateArrivee   DateTime  // Heure d'arrivée
+  dateDepart    DateTime? // Heure de départ (optionnel car peut être null au début)
+  latitude      Float     // Position géographique - latitude
+  longitude     Float     // Position géographique - longitude
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([userId])
+}
